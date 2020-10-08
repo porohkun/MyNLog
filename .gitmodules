@@ -1,0 +1,3 @@
+[submodule "WPF.MyFlatTheme"]
+	path = WPF.MyFlatTheme
+	url = git@github.com:porohkun/WPF.MyFlatTheme.git

@@ -4,6 +4,10 @@
                         xmlns:local="clr-namespace:MyNLog"
                         xmlns:prism="http://prismlibrary.com/">
     <prism:PrismApplication.Resources>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MyFlatTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </prism:PrismApplication.Resources>
 </prism:PrismApplication>
