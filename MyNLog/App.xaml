@@ -6,7 +6,9 @@
     <prism:PrismApplication.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Colors/DarkColors.xaml"/>
                 <ResourceDictionary Source="MyFlatTheme.xaml"/>
+                <ResourceDictionary Source="Controls/ChromeWindow.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </prism:PrismApplication.Resources>

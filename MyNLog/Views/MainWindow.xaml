@@ -3,12 +3,38 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:MyNLog.Views"
+        xmlns:v="clr-namespace:MyNLog.Views"
+        xmlns:local="clr-namespace:MyNLog"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Style="{StaticResource ChromeWindow}"
+        WindowStartupLocation="CenterScreen"
+        Title="MyNLog" Height="350" Width="500">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0"
+              HorizontalAlignment="Left"
+              Margin="4,0"
+              SnapsToDevicePixels="True"
+              WindowChrome.IsHitTestVisibleInChrome="True"
+              RenderOptions.EdgeMode="Aliased">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open" />
+                <Separator x:Name="ggg"/>
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
+            <MenuItem Header="_Network">
+                <MenuItem Header="Connect" IsEnabled="False"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_Check for Updates..."/>
+                <Separator />
+                <MenuItem Header="_About"/>
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>

@@ -9,6 +9,8 @@ namespace MyNLog
 {
     public partial class App : PrismApplication
     {
+        protected static readonly NLog.Logger Logger = NLog.LogManager.GetLogger(typeof(App).ToString());
+
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
 
@@ -22,6 +24,7 @@ namespace MyNLog
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            Logger.Info("OnStartup");
             base.OnStartup(e);
 
             PresentationTraceSources.DataBindingSource.Listeners.Add(Container.Resolve<BindingErrorTraceListener>());
