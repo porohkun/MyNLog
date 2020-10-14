@@ -97,6 +97,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Converters\ChainConverter.cs" />
+    <Compile Include="Converters\ReverseConverter.cs" />
+    <Compile Include="Converters\IsNotNullConverter.cs" />
+    <Compile Include="Converters\StackTraceToLinesConverter.cs" />
+    <Compile Include="Converters\LogLevelColorSelector.cs" />
+    <Compile Include="Converters\LogItemLoggerCropperConverter.cs" />
+    <Compile Include="Models\LogItem.cs" />
+    <Compile Include="Models\LogLevel.cs" />
     <Compile Include="Services\BindingErrorTraceListener.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
@@ -132,9 +140,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Misc\" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\MainWindow.xaml">

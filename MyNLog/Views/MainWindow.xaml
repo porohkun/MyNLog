@@ -4,15 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:v="clr-namespace:MyNLog.Views"
+        xmlns:c="clr-namespace:MyNLog.Converters"
         xmlns:local="clr-namespace:MyNLog"
+        xmlns:misc="clr-namespace:WPF.Misc"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        mc:Ignorable="d"
+        mc:Ignorable="d" d:DataContext="{StaticResource MainWindowViewModelDummy}"
         Style="{StaticResource ChromeWindow}"
         WindowStartupLocation="CenterScreen"
         Title="MyNLog" Height="350" Width="500">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -24,7 +27,7 @@
               RenderOptions.EdgeMode="Aliased">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" />
-                <Separator x:Name="ggg"/>
+                <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
             <MenuItem Header="_Network">
@@ -36,5 +39,120 @@
                 <MenuItem Header="_About"/>
             </MenuItem>
         </Menu>
+        <Border Grid.Row="1" Background="{StaticResource BgrDarkBrush}">
+
+        </Border>
+        <ListBox Grid.Row="2" ItemsSource="{Binding LogItems}"
+                 Grid.IsSharedSizeScope="True"
+                 Background="{StaticResource BgrAltDarkBrush}"
+                 BorderThickness="0"
+                 ScrollViewer.CanContentScroll="False"
+                 ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                 SelectionMode="Extended">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="22"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="TimeGroup"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="LevelGroup"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="LoggerGroup" x:Name="GridLoggerGroup"/>
+                            <ColumnDefinition Width="4"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <ToggleButton x:Name="MoreInfoButton"
+                                      Style="{StaticResource PathToggleButton}"
+                                      misc:PathDecorator.PathStyle="{StaticResource RightTick}"
+                                      misc:PathDecorator.PathThickness="1"
+                                      misc:PathDecorator.PathWidth="12"
+                                      misc:PathDecorator.PathHeight="12"
+                                      VerticalContentAlignment="Top"
+                                      Background="Transparent" Padding="1,2">
+                            <misc:PathDecorator.PathRenderTransform>
+                                <RotateTransform x:Name="PathTransform" Angle="0"/>
+                            </misc:PathDecorator.PathRenderTransform>
+                            <ToggleButton.Triggers>
+                                <EventTrigger RoutedEvent="CheckBox.Checked">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard Timeline.DesiredFrameRate="60">
+                                                <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
+                                                                 From="0" To="90" AutoReverse="False" Duration="0:0:0.2" 
+                                                                 DecelerationRatio="1"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="CheckBox.Unchecked">
+                                    <EventTrigger.Actions>
+                                        <BeginStoryboard>
+                                            <Storyboard Timeline.DesiredFrameRate="60">
+                                                <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
+                                                                 From="90" To="0" AutoReverse="False" Duration="0:0:0.2" 
+                                                                 DecelerationRatio="1"/>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger.Actions>
+                                </EventTrigger>
+                            </ToggleButton.Triggers>
+                        </ToggleButton>
+                        <TextBlock Grid.Column="2" Text="{Binding Time, StringFormat=yyyy-MM-dd HH:mm:ss.ffff}"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
+                        <TextBlock Grid.Column="4" Text="{Binding Level}"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
+                        <TextBlock Grid.Column="6" HorizontalAlignment="Right"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}">
+                            <TextBlock.Text>
+                                <MultiBinding Converter="{StaticResource LogItemLoggerCropperConverter}" StringFormat="{}{0}:">
+                                    <Binding Path="Logger"/>
+                                    <Binding Path="IsChecked" ElementName="MoreInfoButton"/>
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
+                        <TextBlock Grid.Column="8" Text="{Binding Message}" TextWrapping="Wrap"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
+                        <Grid Grid.ColumnSpan="9" Grid.Row="1"
+                              Visibility="{Binding IsChecked, ElementName=MoreInfoButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="42"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <StackPanel.Visibility>
+                                    <Binding Path="Exception">
+                                        <Binding.Converter>
+                                            <c:ChainConverter>
+                                                <c:IsNotNullConverter/>
+                                                <BooleanToVisibilityConverter/>
+                                            </c:ChainConverter>
+                                        </Binding.Converter>
+                                    </Binding>
+                                </StackPanel.Visibility>
+                                <RadioButton Content="stack" Margin="2" IsChecked="True" x:Name="StackBtn" Style="{StaticResource ToggleRadioButton}"/>
+                                <RadioButton Content="excep" Margin="2" Style="{StaticResource ToggleRadioButton}"/>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" TextWrapping="Wrap"
+                                       Visibility="{Binding IsChecked, ElementName=StackBtn, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Text="{Binding StackTrace, Converter={StaticResource StackTraceToLinesConverter}}"/>
+                            <TextBlock Grid.Column="1" TextWrapping="Wrap"
+                                       Visibility="{Binding IsChecked, ElementName=StackBtn, Converter={StaticResource ReverseBooleanToVisibilityConverter}}"
+                                       Text="{Binding Exception, Converter={StaticResource StackTraceToLinesConverter}}"/>
+                        </Grid>
+                    </Grid>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsChecked, ElementName=MoreInfoButton}" Value="True">
+                            <Setter TargetName="GridLoggerGroup" Property="SharedSizeGroup" Value="{x:Null}"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </Window>
