@@ -38,6 +38,9 @@
     <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.2.0.4\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.7.5\lib\net45\NLog.dll</HintPath>
     </Reference>
@@ -97,6 +100,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\InjectableCommand.cs" />
+    <Compile Include="Commands\OpenNlogConfigCommand.cs" />
+    <Compile Include="Misc\PrismResourceInjectionAttribute.cs" />
+    <Compile Include="Misc\PrismSingletonAttribute.cs" />
+    <Compile Include="Misc\TypeExtensions.cs" />
+    <Compile Include="Models\NlogConfig\JsonFileConnection.cs" />
+    <Compile Include="Models\NlogConfig\INLogConnection.cs" />
+    <Compile Include="Models\NlogConfig\LogItemJsonConverter.cs" />
+    <Compile Include="Services\LogFileService.cs" />
     <Compile Include="Converters\ChainConverter.cs" />
     <Compile Include="Converters\ReverseConverter.cs" />
     <Compile Include="Converters\IsNotNullConverter.cs" />

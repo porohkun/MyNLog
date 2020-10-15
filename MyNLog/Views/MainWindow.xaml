@@ -26,7 +26,9 @@
               WindowChrome.IsHitTestVisibleInChrome="True"
               RenderOptions.EdgeMode="Aliased">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" />
+                <MenuItem Header="_Open log file" Command="{DynamicResource OpenLogFileCommand}"/>
+                <MenuItem Header="Open _Nlog config" Command="{DynamicResource OpenNlogConfigCommand}"/>
+                <MenuItem Header="_Close log file" />
                 <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
