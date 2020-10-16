@@ -7,6 +7,9 @@ namespace MyNLog.Models.NlogConfig
         int MinIndex { get; }
         int MaxIndex { get; }
         event Action MaxIndexChanged;
+
         LogItem GetRecord(int index);
+        void BeginWatch();
+        void CacheAll();
     }
 }

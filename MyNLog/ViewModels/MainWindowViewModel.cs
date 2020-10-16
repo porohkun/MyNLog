@@ -39,12 +39,10 @@ namespace MyNLog.ViewModels
 
         private void LogFileService_MaxIndexChanged()
         {
-            Logger.Trace("LogFileService_MaxIndexChanged begin");
             int minIndex = LogItems.Any() ? (LogItems.Last().Index + 1) : _logFileService.MinIndex;
 
             for (int i = minIndex; i <= _logFileService.MaxIndex; i++)
                 LogItems.Add(_logFileService.GetRecord(i));
-            Logger.Trace("LogFileService_MaxIndexChanged end");
         }
     }
 }

@@ -5,6 +5,9 @@ namespace MyNLog.Models
     public class LogItem
     {
         public int Index { get; private set; }
+        public long FilePosition { get; private set; }
+        public int StringLength { get; private set; }
+
         public DateTime Time { get; }
         public LogLevel Level { get; }
         public string Logger { get; }
@@ -36,6 +39,12 @@ namespace MyNLog.Models
         public void SetIndex(int index)
         {
             Index = index;
+        }
+
+        public void SetCoords(long filePosition, int stringLength)
+        {
+            FilePosition = filePosition;
+            StringLength = stringLength;
         }
     }
 }

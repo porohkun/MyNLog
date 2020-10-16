@@ -18,17 +18,12 @@ namespace MyNLog.Services
 
         public event Action MaxIndexChanged;
 
-        private string _configPath;
         private XmlLoggingConfiguration _config;
-        private Target _target;
 
         private INLogConnection _connection;
 
         public void OpenConfigFile(string fileName)
         {
-            Logger.Trace("OpenConfigFile begin");
-
-            _configPath = fileName;
             _config = new XmlLoggingConfiguration(fileName);
             SelectTarget(_config.AllTargets.First(t =>
             {
@@ -36,13 +31,10 @@ namespace MyNLog.Services
                     return false;
                 return ft.Layout is JsonLayout;
             }));
-
-            Logger.Trace("OpenConfigFile end");
         }
 
         public void SelectTarget(Target target)
         {
-            Logger.Trace("SelectTarget begin");
             if (!_config.AllTargets.Contains(target))
                 throw new ArgumentException("Config doesnt contain selected target");
 
@@ -50,9 +42,9 @@ namespace MyNLog.Services
             {
                 _connection = new JsonFileConnection(GetFilePath(layoutTarget), layout);
                 _connection.MaxIndexChanged += () => MaxIndexChanged?.Invoke();
-                (_connection as JsonFileConnection).CacheAllFile();
+                _connection.CacheAll();
+                _connection.BeginWatch();
             }
-            Logger.Trace("SelectTarget end");
         }
 
         private string GetFilePath(FileTarget target)

@@ -18,6 +18,7 @@ namespace MyNLog.Models.NlogConfig
         private JsonSerializer _serializer;
         private string _filename;
         private JsonLayout _layout;
+        private FileSystemWatcher _watcher;
 
         private readonly Dictionary<int, LogItem> _cached = new Dictionary<int, LogItem>();
 
@@ -27,21 +28,41 @@ namespace MyNLog.Models.NlogConfig
             _layout = layout;
         }
 
-        public void CacheAllFile()
+        public void CacheAll()
         {
-            Logger.Trace("CacheAllFile begin");
-            foreach (var line in File.ReadAllLines(_filename))
+            using (var file = new StreamReader(_filename))
             {
+                ReadToTheEnd(file);
+            }
+
+            MaxIndexChanged?.Invoke();
+        }
+
+        private int ReadToTheEnd(StreamReader file)
+        {
+            int count = 0;
+            var position = file.GetPosition();
+            string line;
+            while ((line = file.ReadLine()) != null)
+            {
+                var newPosition = file.GetPosition();
+                var length = newPosition - position;
                 using (var reader = new JsonTextReader(new StringReader(line)))
                 {
                     var item = GetSerializer().Deserialize<LogItem>(reader);
                     item.SetIndex(++MaxIndex);
+                    item.SetCoords(position, (int)length);
                     _cached.Add(item.Index, item);
+                    count++;
                 }
+                position = newPosition;
             }
-            Logger.Trace("MaxIndexChanged calling");
-            MaxIndexChanged?.Invoke();
-            Logger.Trace("CacheAllFile end");
+            return count;
+        }
+
+        public void CacheFileTail()
+        {
+
         }
 
         public JsonSerializer GetSerializer()
@@ -68,6 +89,34 @@ namespace MyNLog.Models.NlogConfig
                 return item;
             else
                 throw new ArgumentException($"index '{index}' not found in cache");
+        }
+
+        public void BeginWatch()
+        {
+            _watcher = new FileSystemWatcher
+            {
+                Path = Path.GetDirectoryName(_filename),
+                Filter = Path.GetFileName(_filename),
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size
+            };
+            _watcher.Changed += Watcher_Changed;
+            _watcher.EnableRaisingEvents = true;
+        }
+
+        private void Watcher_Changed(object sender, FileSystemEventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                var lastItem = GetRecord(MaxIndex);
+                if (lastItem == null) return;
+
+                using (var file = new StreamReader(_filename))
+                {
+                    file.SetPosition(lastItem.FilePosition + lastItem.StringLength);
+                    if (ReadToTheEnd(file) > 0)
+                        MaxIndexChanged?.Invoke();
+                }
+            });
         }
     }
 }

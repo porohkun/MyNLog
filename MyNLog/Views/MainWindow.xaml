@@ -7,6 +7,7 @@
         xmlns:c="clr-namespace:MyNLog.Converters"
         xmlns:local="clr-namespace:MyNLog"
         xmlns:misc="clr-namespace:WPF.Misc"
+        xmlns:misc2="clr-namespace:MyNLog.Misc"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d" d:DataContext="{StaticResource MainWindowViewModelDummy}"
@@ -29,6 +30,7 @@
                 <MenuItem Header="_Open log file" Command="{DynamicResource OpenLogFileCommand}"/>
                 <MenuItem Header="Open _Nlog config" Command="{DynamicResource OpenNlogConfigCommand}"/>
                 <MenuItem Header="_Close log file" />
+                <MenuItem Header="Test log" Command="{DynamicResource TestLogCommand}"/>
                 <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
@@ -50,6 +52,7 @@
                  BorderThickness="0"
                  ScrollViewer.CanContentScroll="False"
                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                 misc2:ListBoxBehavior.ScrollOnNewItem="True"
                  SelectionMode="Extended">
             <ListBox.ItemTemplate>
                 <DataTemplate>
