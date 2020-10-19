@@ -5,23 +5,16 @@ using System.Windows.Data;
 
 namespace MyNLog.Converters
 {
-    public class LogItemLoggerCropperConverter : IMultiValueConverter
+    public class LogItemLoggerCropperConverter : IValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values.Length != 2)
-                return null;
-            if (!(values[0] is string logger))
-                return null;
-            if (!(values[1] is bool fullLength))
-                return null;
-            if (fullLength)
-                return logger;
-            else
+            if (value is string logger)
                 return logger.Split('.').Last();
+            return null;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

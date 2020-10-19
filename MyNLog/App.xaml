@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="MyFlatTheme.xaml"/>
                 <ResourceDictionary Source="Controls/ChromeWindow.xaml"/>
                 <ResourceDictionary Source="Pathes/Standard.xaml"/>
+                <ResourceDictionary Source="Pathes.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <vm:MainWindowViewModelDummy x:Key="MainWindowViewModelDummy"/>

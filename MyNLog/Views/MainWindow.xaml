@@ -28,8 +28,17 @@
               RenderOptions.EdgeMode="Aliased">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open log file" Command="{DynamicResource OpenLogFileCommand}"/>
-                <MenuItem Header="Open _Nlog config" Command="{DynamicResource OpenNlogConfigCommand}"/>
-                <MenuItem Header="_Close log file" />
+                <MenuItem Header="Open _Nlog config"
+                          Command="{DynamicResource OpenNlogConfigCommand}"
+                          misc:PathDecorator.PathStyle="{StaticResource FolderOpen}"
+                          misc:PathDecorator.PathWidth="16"
+                          misc:PathDecorator.PathHeight="16"/>
+                <MenuItem Header="_Close log file" 
+                          Command="{DynamicResource CloseLogCommand}"
+                          misc:PathDecorator.PathStyle="{StaticResource Disconnect}"
+                          misc:PathDecorator.PathWidth="16"
+                          misc:PathDecorator.PathHeight="16"/>
+                <Separator/>
                 <MenuItem Header="Test log" Command="{DynamicResource TestLogCommand}"/>
                 <Separator/>
                 <MenuItem Header="_Exit"/>
@@ -43,8 +52,28 @@
                 <MenuItem Header="_About"/>
             </MenuItem>
         </Menu>
-        <Border Grid.Row="1" Background="{StaticResource BgrDarkBrush}">
-
+        <Border Grid.Row="1" Background="{StaticResource BgrDarkBrush}" Padding="2">
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource PathButton}" Margin="2,0"
+                        Command="{DynamicResource OpenNlogConfigCommand}"
+                        misc:PathDecorator.PathStyle="{StaticResource FolderOpen}"
+                        misc:PathDecorator.PathWidth="20"
+                        misc:PathDecorator.PathHeight="20"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                <Button Style="{StaticResource PathButton}" Margin="2,0"
+                        Command="{DynamicResource CloseLogCommand}"
+                        misc:PathDecorator.PathStyle="{StaticResource Disconnect}"
+                        misc:PathDecorator.PathWidth="20"
+                        misc:PathDecorator.PathHeight="20"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                <Rectangle Width="2" Margin="2,4" Fill="{StaticResource PathDisabledBrush}"/>
+                <Button Style="{StaticResource PathButton}" Margin="2,0"
+                        Command="{Binding ClearLogCommand}"
+                        misc:PathDecorator.PathStyle="{StaticResource LogRemove}"
+                        misc:PathDecorator.PathWidth="20"
+                        misc:PathDecorator.PathHeight="20"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+            </StackPanel>
         </Border>
         <ListBox Grid.Row="2" ItemsSource="{Binding LogItems}"
                  Grid.IsSharedSizeScope="True"
@@ -56,7 +85,7 @@
                  SelectionMode="Extended">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ScrollViewer}}}">
+                    <Grid MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ScrollViewer}, Mode=FindAncestor}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="22"/>
                             <ColumnDefinition Width="4"/>
@@ -84,27 +113,23 @@
                                 <RotateTransform x:Name="PathTransform" Angle="0"/>
                             </misc:PathDecorator.PathRenderTransform>
                             <ToggleButton.Triggers>
-                                <EventTrigger RoutedEvent="CheckBox.Checked">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard Timeline.DesiredFrameRate="60">
-                                                <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
+                                <EventTrigger RoutedEvent="ToggleButton.Checked">
+                                    <BeginStoryboard>
+                                        <Storyboard Timeline.DesiredFrameRate="60">
+                                            <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
                                                                  From="0" To="90" AutoReverse="False" Duration="0:0:0.2" 
                                                                  DecelerationRatio="1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
+                                        </Storyboard>
+                                    </BeginStoryboard>
                                 </EventTrigger>
-                                <EventTrigger RoutedEvent="CheckBox.Unchecked">
-                                    <EventTrigger.Actions>
-                                        <BeginStoryboard>
-                                            <Storyboard Timeline.DesiredFrameRate="60">
-                                                <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
+                                <EventTrigger RoutedEvent="ToggleButton.Unchecked">
+                                    <BeginStoryboard>
+                                        <Storyboard Timeline.DesiredFrameRate="60">
+                                            <DoubleAnimation Storyboard.TargetName="PathTransform" Storyboard.TargetProperty="Angle"
                                                                  From="90" To="0" AutoReverse="False" Duration="0:0:0.2" 
                                                                  DecelerationRatio="1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger.Actions>
+                                        </Storyboard>
+                                    </BeginStoryboard>
                                 </EventTrigger>
                             </ToggleButton.Triggers>
                         </ToggleButton>
@@ -113,18 +138,22 @@
                         <TextBlock Grid.Column="4" Text="{Binding Level}"
                                    Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
                         <TextBlock Grid.Column="6" HorizontalAlignment="Right"
-                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}">
-                            <TextBlock.Text>
-                                <MultiBinding Converter="{StaticResource LogItemLoggerCropperConverter}" StringFormat="{}{0}:">
-                                    <Binding Path="Logger"/>
-                                    <Binding Path="IsChecked" ElementName="MoreInfoButton"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
+                                   Text="{Binding Logger, Converter={StaticResource LogItemLoggerCropperConverter}, StringFormat=\{0\}:}"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"
+                                   Visibility="{Binding IsChecked, Converter={StaticResource ReverseBooleanToVisibilityConverter}, ElementName=MoreInfoButton}"/>
                         <TextBlock Grid.Column="8" Text="{Binding Message}" TextWrapping="Wrap"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"
+                                   Visibility="{Binding IsChecked, Converter={StaticResource ReverseBooleanToVisibilityConverter}, ElementName=MoreInfoButton}"/>
+                        <StackPanel Orientation="Horizontal" Grid.Column="6" Grid.ColumnSpan="3"
+                                    Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=MoreInfoButton}">
+                            <TextBlock Grid.Column="6" Text="{Binding Logger, StringFormat=\{0\}:}"
                                    Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
+                            <TextBlock Grid.Column="8" Text="{Binding Message}" Margin="4,0,0,0" TextWrapping="Wrap"
+                                   Foreground="{Binding Level, Converter={StaticResource LogLevelColorSelector}}"/>
+                        </StackPanel>
+
                         <Grid Grid.ColumnSpan="9" Grid.Row="1"
-                              Visibility="{Binding IsChecked, ElementName=MoreInfoButton, Converter={StaticResource BooleanToVisibilityConverter}}">
+                              Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=MoreInfoButton}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="42"/>
                                 <ColumnDefinition Width="*"/>
@@ -144,18 +173,19 @@
                                 <RadioButton Content="excep" Margin="2" Style="{StaticResource ToggleRadioButton}"/>
                             </StackPanel>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap"
-                                       Visibility="{Binding IsChecked, ElementName=StackBtn, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=StackBtn}"
                                        Text="{Binding StackTrace, Converter={StaticResource StackTraceToLinesConverter}}"/>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap"
-                                       Visibility="{Binding IsChecked, ElementName=StackBtn, Converter={StaticResource ReverseBooleanToVisibilityConverter}}"
+                                       Visibility="{Binding IsChecked, Converter={StaticResource ReverseBooleanToVisibilityConverter}, ElementName=StackBtn}"
                                        Text="{Binding Exception, Converter={StaticResource StackTraceToLinesConverter}}"/>
                         </Grid>
                     </Grid>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsChecked, ElementName=MoreInfoButton}" Value="True">
-                            <Setter TargetName="GridLoggerGroup" Property="SharedSizeGroup" Value="{x:Null}"/>
+                    <!--<DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="Error">
+                            <Setter TargetName="MoreInfoButton" Property="IsChecked" Value="True"/>
+                            <Setter TargetName="StackBtn" Property="IsChecked" Value="False"/>
                         </DataTrigger>
-                    </DataTemplate.Triggers>
+                    </DataTemplate.Triggers>-->
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

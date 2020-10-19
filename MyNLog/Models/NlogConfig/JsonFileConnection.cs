@@ -118,5 +118,19 @@ namespace MyNLog.Models.NlogConfig
                 }
             });
         }
+
+        public void StopWatch()
+        {
+            _watcher.EnableRaisingEvents = false;
+        }
+
+        public void Close()
+        {
+            StopWatch();
+            _cached.Clear();
+            MinIndex = 0;
+            MaxIndex = -1;
+            MaxIndexChanged?.Invoke();
+        }
     }
 }

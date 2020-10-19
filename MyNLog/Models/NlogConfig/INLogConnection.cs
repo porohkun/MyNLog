@@ -11,5 +11,6 @@ namespace MyNLog.Models.NlogConfig
         LogItem GetRecord(int index);
         void BeginWatch();
         void CacheAll();
+        void Close();
     }
 }

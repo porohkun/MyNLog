@@ -16,7 +16,11 @@ namespace MyNLog.Services
         public int MinIndex => _connection.MinIndex;
         public int MaxIndex => _connection.MaxIndex;
 
+        public bool IsLogOpened => _connection != null;
+
         public event Action MaxIndexChanged;
+        public event Action SourceConnected;
+        public event Action SourceDisconnected;
 
         private XmlLoggingConfiguration _config;
 
@@ -33,6 +37,13 @@ namespace MyNLog.Services
             }));
         }
 
+        internal void CloseLog()
+        {
+            _connection.Close();
+            _connection = null;
+            SourceDisconnected?.Invoke();
+        }
+
         public void SelectTarget(Target target)
         {
             if (!_config.AllTargets.Contains(target))
@@ -44,6 +55,7 @@ namespace MyNLog.Services
                 _connection.MaxIndexChanged += () => MaxIndexChanged?.Invoke();
                 _connection.CacheAll();
                 _connection.BeginWatch();
+                SourceConnected?.Invoke();
             }
         }
 

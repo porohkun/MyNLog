@@ -1,5 +1,6 @@
 ﻿using MyNLog.Models;
 using MyNLog.Services;
+using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Collections.ObjectModel;
@@ -27,22 +28,41 @@ namespace MyNLog.ViewModels
 
         public ObservableCollection<LogItem> LogItems { get; } = new ObservableCollection<LogItem>();
 
-        LogFileService _logFileService;
+        public DelegateCommand ClearLogCommand { get; }
+
+        private LogFileService _logFileService;
+        private int _minIndex = -1;
 
         protected MainWindowViewModel() { }
 
         public MainWindowViewModel(LogFileService logFileService)
         {
+            ClearLogCommand = new DelegateCommand(ClearLog);
+
             _logFileService = logFileService;
             _logFileService.MaxIndexChanged += LogFileService_MaxIndexChanged;
+            _logFileService.SourceDisconnected += _logFileService_SourceDisconnected;
         }
 
         private void LogFileService_MaxIndexChanged()
         {
-            int minIndex = LogItems.Any() ? (LogItems.Last().Index + 1) : _logFileService.MinIndex;
+            _minIndex = Math.Max(_minIndex, _logFileService.MinIndex);
 
-            for (int i = minIndex; i <= _logFileService.MaxIndex; i++)
+            for (int i = _minIndex; i <= _logFileService.MaxIndex; i++)
                 LogItems.Add(_logFileService.GetRecord(i));
+
+            _minIndex = LogItems.Any() ? (LogItems.Last().Index + 1) : _logFileService.MinIndex;
+        }
+
+        private void _logFileService_SourceDisconnected()
+        {
+            _minIndex = -1;
+            ClearLog();
+        }
+
+        private void ClearLog()
+        {
+            LogItems.Clear();
         }
     }
 }
