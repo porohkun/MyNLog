@@ -41,6 +41,17 @@
                 <c:ReverseConverter/>
                 <BooleanToVisibilityConverter/>
             </c:ChainConverter>
+            <c:TextHighlighter x:Key="ExceptionHighlighter"
+                               Pattern="\s{3}([^\d\s]+)\s([\w.]+\.)([\w(&lt;>\s]+\))\s([^\d\s]+)\s([\w:\\.]+:)([^\d\s]+)\s(\d+)">
+                <StaticResource ResourceKey="TextMainBrush"/>
+                <SolidColorBrush Color="DarkSlateGray"/>
+                <SolidColorBrush Color="Gray"/>
+                <SolidColorBrush Color="White"/>
+                <SolidColorBrush Color="DarkSlateGray"/>
+                <SolidColorBrush Color="Gray"/>
+                <SolidColorBrush Color="DarkSlateGray"/>
+                <SolidColorBrush Color="White"/>
+            </c:TextHighlighter>
         </ResourceDictionary>
     </prism:PrismApplication.Resources>
 </prism:PrismApplication>

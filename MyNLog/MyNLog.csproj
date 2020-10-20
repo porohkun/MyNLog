@@ -100,6 +100,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Misc\TextBlockInliner.cs" />
+    <Compile Include="Converters\TextHighlighter.cs" />
+    <Compile Include="Commands\CloseLogCommand.cs" />
     <Compile Include="Commands\TestLogCommand.cs" />
     <Compile Include="Misc\ListBoxBehavior.cs" />
     <Compile Include="Misc\StreamReaderExtensions.cs" />

@@ -177,7 +177,7 @@
                                        Text="{Binding StackTrace, Converter={StaticResource StackTraceToLinesConverter}}"/>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap"
                                        Visibility="{Binding IsChecked, Converter={StaticResource ReverseBooleanToVisibilityConverter}, ElementName=StackBtn}"
-                                       Text="{Binding Exception, Converter={StaticResource StackTraceToLinesConverter}}"/>
+                                       misc2:TextBlockInliner.Inlines ="{Binding Exception, Converter={StaticResource ExceptionHighlighter}}"/>
                         </Grid>
                     </Grid>
                     <!--<DataTemplate.Triggers>
