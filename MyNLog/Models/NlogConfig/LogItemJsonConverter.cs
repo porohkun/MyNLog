@@ -45,7 +45,7 @@ namespace MyNLog.Models.NlogConfig
             Enum.TryParse<LogLevel>(levelString, true, out var level);
 
             var r = new Regex(" => ");
-            var stacktrace = string.Join("\n in ", r.Split(stacktraceString).Reverse());
+            var stacktrace = "in " + string.Join("\nin ", r.Split(stacktraceString).Reverse());
 
             var exception = string.Empty;
             if (!string.IsNullOrWhiteSpace(exceptionString))
@@ -55,9 +55,6 @@ namespace MyNLog.Models.NlogConfig
                     var type = exceptionObject["Type"].Value<string>();
                     var message = exceptionObject["Message"]?.Value<string>() ?? string.Empty;
                     var stack = exceptionObject["StackTrace"]?.Value<string>() ?? string.Empty;
-
-                    var stackRegex = new Regex(@"\s{3}[^\d\s]+\s([\w.(<>\s]+\))\s[^\d\s]\s([\w:\\.]+):[^\d\s]+\s(\d+)");
-                    var matches = stackRegex.Matches(stack);
 
                     exception = string.IsNullOrWhiteSpace(stack) ? $"{type}: {message}" : $"{type}: {message}\n{stack}";
                 }

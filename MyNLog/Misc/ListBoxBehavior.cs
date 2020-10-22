@@ -35,8 +35,7 @@ namespace MyNLog.Misc
 
         public static void OnScrollOnNewItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var listBox = d as ListBox;
-            if (listBox == null) return;
+            if (!(d is ListBox listBox)) return;
             bool oldValue = (bool)e.OldValue, newValue = (bool)e.NewValue;
             if (newValue == oldValue) return;
             if (newValue)
@@ -79,8 +78,7 @@ namespace MyNLog.Misc
         private static void ListBox_Loaded(object sender, RoutedEventArgs e)
         {
             var listBox = (ListBox)sender;
-            var incc = listBox.Items as INotifyCollectionChanged;
-            if (incc == null) return;
+            if (!(listBox.Items is INotifyCollectionChanged incc)) return;
             listBox.Loaded -= ListBox_Loaded;
             Associations[listBox] = new Capture(listBox);
         }

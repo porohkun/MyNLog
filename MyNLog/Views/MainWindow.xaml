@@ -8,12 +8,96 @@
         xmlns:local="clr-namespace:MyNLog"
         xmlns:misc="clr-namespace:WPF.Misc"
         xmlns:misc2="clr-namespace:MyNLog.Misc"
+        xmlns:h="clr-namespace:WPF.TextHighlighter"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         mc:Ignorable="d" d:DataContext="{StaticResource MainWindowViewModelDummy}"
         Style="{StaticResource ChromeWindow}"
         WindowStartupLocation="CenterScreen"
-        Title="MyNLog" Height="350" Width="500">
+        Title="MyNLog" Height="350" Width="650">
+    <Window.Resources>
+        <h:HighlightConverter x:Key="ExceptionHighlighter">
+            <h:HighlightConverter.Resources>
+                <Style TargetType="{x:Type Run}" x:Key="Main">
+                    <Setter Property="Foreground" Value="{StaticResource TextMainBrush}"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="Namespace">
+                    <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="Generic">
+                    <Setter Property="Foreground" Value="#FF2DB671"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="MethodName">
+                    <Setter Property="Foreground" Value="#FFFFFF9A"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="TypeName">
+                    <Setter Property="Foreground" Value="#FFC1E671"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="ArgName">
+                    <Setter Property="Foreground" Value="#FFA2B7DC"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="Path">
+                    <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="Rownum">
+                    <Setter Property="Foreground" Value="SandyBrown"/>
+                </Style>
+            </h:HighlightConverter.Resources>
+            <h:MonoHighlighter Style="{StaticResource Main}"/>
+            <h:RegexHighlighter Pattern="\s{3}[^\d\s]+\s(?&lt;namespace>[\w.]+\.)(?&lt;generic>&lt;[\w\d\s,]+>)*(?&lt;method>\w+\((?:\w+\s\w+,?\s?)*\))\s[^\d\s]+\s(?&lt;path>[\w:\\.]+:)[^\d\s]+\s(?&lt;rownum>\d+)">
+                <h:HighlighterDictionary>
+                    <h:RegexHighlighter x:Key="namespace" Pattern="(?&lt;first>[\w.]+.)\.(?&lt;last>[\w]+.)">
+                        <h:HighlighterDictionary>
+                            <h:MonoHighlighter x:Key="first" Style="{StaticResource Namespace}"/>
+                            <h:MonoHighlighter x:Key="last" Style="{StaticResource Main}"/>
+                        </h:HighlighterDictionary>
+                    </h:RegexHighlighter>
+                    <h:RegexHighlighter x:Key="generic" Pattern="(?&lt;openbr>&lt;)(?&lt;args>[\w\d\s,]+)(?&lt;closebr>>)">
+                        <h:HighlighterDictionary>
+                            <h:MonoHighlighter x:Key="openbr" Style="{StaticResource Main}"/>
+                            <h:RegexHighlighter x:Key="args" Pattern="(?&lt;argtype>[\w\d]+)(?:, |$)">
+                                <h:HighlighterDictionary>
+                                    <h:MonoHighlighter x:Key="argtype" Style="{StaticResource Generic}"/>
+                                </h:HighlighterDictionary>
+                            </h:RegexHighlighter>
+                            <h:MonoHighlighter x:Key="closebr" Style="{StaticResource Main}"/>
+                        </h:HighlighterDictionary>
+                    </h:RegexHighlighter>
+                    <h:RegexHighlighter x:Key="method" Pattern="(?&lt;methodname>\w+)(?&lt;openbr>\()(?&lt;args>[\w\d\s,]*)(?&lt;closebr>\))">
+                        <h:HighlighterDictionary>
+                            <h:MonoHighlighter x:Key="methodname" Style="{StaticResource MethodName}"/>
+                            <h:MonoHighlighter x:Key="openbr" Style="{StaticResource Main}"/>
+                            <h:RegexHighlighter x:Key="args" Pattern="(?&lt;argtype>[\w\d]+)\s(?&lt;argname>[\w\d]+)(?:, |$)">
+                                <h:HighlighterDictionary>
+                                    <h:MonoHighlighter x:Key="argtype" Style="{StaticResource TypeName}"/>
+                                    <h:MonoHighlighter x:Key="argname" Style="{StaticResource ArgName}"/>
+                                </h:HighlighterDictionary>
+                            </h:RegexHighlighter>
+                            <h:MonoHighlighter x:Key="closebr" Style="{StaticResource Main}"/>
+                        </h:HighlighterDictionary>
+                    </h:RegexHighlighter>
+                    <h:MonoHighlighter x:Key="path" Style="{StaticResource Path}"/>
+                    <h:MonoHighlighter x:Key="rownum" Style="{StaticResource Rownum}"/>
+                </h:HighlighterDictionary>
+            </h:RegexHighlighter>
+        </h:HighlightConverter>
+        <h:HighlightConverter x:Key="StackTraceConverter">
+            <h:HighlightConverter.Resources>
+                <Style TargetType="{x:Type Run}" x:Key="Main">
+                    <Setter Property="Foreground" Value="{StaticResource TextDisabledBrush}"/>
+                </Style>
+                <Style TargetType="{x:Type Run}" x:Key="MethodName">
+                    <Setter Property="Foreground" Value="#FFFFFF9A"/>
+                </Style>
+            </h:HighlightConverter.Resources>
+            <h:MonoHighlighter Style="{StaticResource Main}"/>
+            <h:RegexHighlighter Pattern="in [\w\d`.]*\.(?&lt;method>[\w\d]+)">
+                <h:HighlighterDictionary>
+                    <h:MonoHighlighter x:Key="method" Style="{StaticResource MethodName}"/>
+                </h:HighlighterDictionary>
+            </h:RegexHighlighter>
+        </h:HighlightConverter>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -174,10 +258,10 @@
                             </StackPanel>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap"
                                        Visibility="{Binding IsChecked, Converter={StaticResource BooleanToVisibilityConverter}, ElementName=StackBtn}"
-                                       Text="{Binding StackTrace, Converter={StaticResource StackTraceToLinesConverter}}"/>
+                                       h:TextBlockInliner.Inlines="{Binding StackTrace, Converter={StaticResource StackTraceConverter}}"/>
                             <TextBlock Grid.Column="1" TextWrapping="Wrap"
                                        Visibility="{Binding IsChecked, Converter={StaticResource ReverseBooleanToVisibilityConverter}, ElementName=StackBtn}"
-                                       misc2:TextBlockInliner.Inlines ="{Binding Exception, Converter={StaticResource ExceptionHighlighter}}"/>
+                                       h:TextBlockInliner.Inlines ="{Binding Exception, Converter={StaticResource ExceptionHighlighter}}"/>
                         </Grid>
                     </Grid>
                     <!--<DataTemplate.Triggers>

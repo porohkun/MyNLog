@@ -1,3 +1,6 @@
 [submodule "WPF.MyFlatTheme"]
 	path = WPF.MyFlatTheme
 	url = git@github.com:porohkun/WPF.MyFlatTheme.git
+[submodule "WPF.TextHighlighter"]
+	path = WPF.TextHighlighter
+	url = ../WPF.TextHighlighter.git
