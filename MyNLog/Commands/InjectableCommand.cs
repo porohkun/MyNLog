@@ -27,6 +27,7 @@ namespace MyNLog.Commands
     {
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetLogger(typeof(T).ToString());
 
+        public bool CanExecute() => CanExecute(null);
         public void Execute() => Execute(null);
 
         public void Execute(object parameter)
@@ -54,6 +55,7 @@ namespace MyNLog.Commands
     {
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetLogger(typeof(T).ToString());
 
+        public bool CanExecute() => CanExecute(default(TParam));
         public void Execute() => Execute(default(TParam));
 
         public void Execute(object parameter)
@@ -104,6 +106,7 @@ namespace MyNLog.Commands
     {
         protected static readonly NLog.Logger Logger = NLog.LogManager.GetLogger(typeof(T).ToString());
 
+        public bool CanExecute() => CanExecute(null);
         public void Execute() => Execute(null);
 
         public void Execute(object parameter)

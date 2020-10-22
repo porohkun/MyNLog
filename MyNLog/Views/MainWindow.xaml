@@ -111,7 +111,7 @@
               WindowChrome.IsHitTestVisibleInChrome="True"
               RenderOptions.EdgeMode="Aliased">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open log file" Command="{DynamicResource OpenLogFileCommand}"/>
+                <MenuItem Header="_Open log file" IsEnabled="False" Command="{DynamicResource OpenLogFileCommand}"/>
                 <MenuItem Header="Open _Nlog config"
                           Command="{DynamicResource OpenNlogConfigCommand}"
                           misc:PathDecorator.PathStyle="{StaticResource FolderOpen}"

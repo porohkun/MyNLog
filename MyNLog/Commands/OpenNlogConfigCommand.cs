@@ -9,10 +9,12 @@ namespace MyNLog.Commands
     public class OpenNlogConfigCommand : InjectableCommand<OpenNlogConfigCommand>
     {
         private readonly LogFileService _logFileService;
+        private readonly ICommand _closeLogCommand;
 
-        public OpenNlogConfigCommand(LogFileService logFileService)
+        public OpenNlogConfigCommand(LogFileService logFileService, CloseLogCommand closeLogCommand)
         {
             _logFileService = logFileService;
+            _closeLogCommand = closeLogCommand;
         }
 
         protected override bool CanExecuteInternal(object parameter)
@@ -30,6 +32,8 @@ namespace MyNLog.Commands
             {
                 try
                 {
+                    if (_closeLogCommand.CanExecute())
+                        _closeLogCommand.Execute();
                     _logFileService.OpenConfigFile(dialog.FileName);
                 }
                 catch (Exception e)
