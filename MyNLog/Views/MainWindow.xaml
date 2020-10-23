@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:v="clr-namespace:MyNLog.Views"
         xmlns:c="clr-namespace:MyNLog.Converters"
         xmlns:local="clr-namespace:MyNLog"
@@ -98,6 +99,11 @@
             </h:RegexHighlighter>
         </h:HighlightConverter>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="C" Modifiers="Control" Command="Open"/>
+        <KeyBinding Key="S" Modifiers="Control" Command="SaveAs"/>
+    </Window.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -127,6 +133,20 @@
                 <Separator/>
                 <MenuItem Header="_Exit"/>
             </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Header="_Copy" InputGestureText="Ctrl+C"
+                          misc:PathDecorator.PathStyle="{StaticResource Copy}"
+                          misc:PathDecorator.PathWidth="16"
+                          misc:PathDecorator.PathHeight="16"/>
+                <MenuItem Header="C_lear"
+                          misc:PathDecorator.PathStyle="{StaticResource LogRemove}"
+                          misc:PathDecorator.PathWidth="16"
+                          misc:PathDecorator.PathHeight="16"/>
+                <MenuItem Header="C_ollapse all"
+                          misc:PathDecorator.PathStyle="{StaticResource Collapse}"
+                          misc:PathDecorator.PathWidth="16"
+                          misc:PathDecorator.PathHeight="16"/>
+            </MenuItem>
             <MenuItem Header="_Network">
                 <MenuItem Header="Connect" IsEnabled="False"/>
             </MenuItem>
@@ -137,7 +157,18 @@
             </MenuItem>
         </Menu>
         <Border Grid.Row="1" Background="{StaticResource BgrDarkBrush}" Padding="2">
-            <StackPanel Orientation="Horizontal">
+            <DockPanel LastChildFill="True">
+                <DockPanel.Resources>
+                    <Style TargetType="{x:Type Separator}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Rectangle Width="2" Margin="2,4" Fill="{StaticResource PathDisabledBrush}"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </DockPanel.Resources>
                 <Button Style="{StaticResource PathButton}" Margin="2,0"
                         Command="{DynamicResource OpenNlogConfigCommand}"
                         misc:PathDecorator.PathStyle="{StaticResource FolderOpen}"
@@ -150,16 +181,67 @@
                         misc:PathDecorator.PathWidth="20"
                         misc:PathDecorator.PathHeight="20"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
-                <Rectangle Width="2" Margin="2,4" Fill="{StaticResource PathDisabledBrush}"/>
+                <Separator/>
                 <Button Style="{StaticResource PathButton}" Margin="2,0"
                         Command="{Binding ClearLogCommand}"
                         misc:PathDecorator.PathStyle="{StaticResource LogRemove}"
                         misc:PathDecorator.PathWidth="20"
                         misc:PathDecorator.PathHeight="20"
                         Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
-            </StackPanel>
+                <Separator/>
+                <Button Style="{StaticResource PathButton}" Margin="2,0"
+                        Command="{Binding CopySelectedCommand}"
+                        CommandParameter="{Binding SelectedItems, ElementName=LogItemsListBox}"
+                        misc:PathDecorator.PathStyle="{StaticResource Copy}"
+                        misc:PathDecorator.PathWidth="20"
+                        misc:PathDecorator.PathHeight="20"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                <Button Style="{StaticResource PathButton}" Margin="2,0"
+                        Command="{Binding CollapseAllCommand}"
+                        misc:PathDecorator.PathStyle="{StaticResource Collapse}"
+                        misc:PathDecorator.PathWidth="20"
+                        misc:PathDecorator.PathHeight="20"
+                        Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                <Separator/>
+                <ToggleButton x:Name="FilterPopupButton" Style="{StaticResource PathToggleButton}" Margin="2,0"
+                              IsEnabled="False"
+                              misc:PathDecorator.PathStyle="{StaticResource FilterMenu}"
+                              misc:PathDecorator.PathWidth="20"
+                              misc:PathDecorator.PathHeight="20"
+                              Width="{Binding ActualHeight, RelativeSource={RelativeSource Mode=Self}}"/>
+                <Popup IsOpen="{Binding IsChecked, ElementName=FilterPopupButton}"
+                       StaysOpen="True"
+                       Placement="Bottom"
+                       PlacementTarget="{Binding ElementName=FilterPopupButton}"
+                       Style="{StaticResource MenuPopup}"
+                       MaxWidth="150"
+                       PopupAnimation="Scroll"
+                       AllowsTransparency="True">
+                    <Border SnapsToDevicePixels="True"
+                            Margin="5,0,5,5"
+                            Background="{StaticResource MenuItemPopupBackgroundBrush}">
+                        <Border.Effect>
+                            <DropShadowEffect ShadowDepth="3" BlurRadius="8" Opacity="0.8" Direction="270"/>
+                        </Border.Effect>
+                        <Grid Width="150" Height="100">
+
+                        </Grid>
+                    </Border>
+                </Popup>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MaxWidth="300"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Margin="2,2" Text="{Binding FilterText}">
+                        <i:Interaction.Behaviors>
+                            <local:TextBoxEnterKeyUpdateBehavior />
+                        </i:Interaction.Behaviors>
+                    </TextBox>
+                </Grid>
+            </DockPanel>
         </Border>
-        <ListBox Grid.Row="2" ItemsSource="{Binding LogItems}"
+        <ListBox x:Name="LogItemsListBox" Grid.Row="2" ItemsSource="{Binding LogItems}"
                  Grid.IsSharedSizeScope="True"
                  Background="{StaticResource BgrAltDarkBrush}"
                  BorderThickness="0"
@@ -185,8 +267,8 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <ToggleButton x:Name="MoreInfoButton"
-                                      Style="{StaticResource PathToggleButton}"
+                        <ToggleButton x:Name="MoreInfoButton" IsChecked="{Binding Expanded}"
+                                      Style="{StaticResource PathStrokeToggleButton}"
                                       misc:PathDecorator.PathStyle="{StaticResource RightTick}"
                                       misc:PathDecorator.PathThickness="1"
                                       misc:PathDecorator.PathWidth="12"
